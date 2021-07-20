@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iomanip>
 #include <thread>
+#include <regex>
 
 // how many tokens to process before reporting on performance
 constexpr int32_t REPORTING_INTERVAL = 250;
@@ -19,11 +20,12 @@ void Poincare::save_vectors(std::string fn) {
     if (!ofs.is_open()) {
         throw std::invalid_argument(fn + " cannot be opened!");
     }
+    ofs << digraph->node_count() << " " << args_->dimension+1 << std::endl;
     for (int32_t i = 0; i < digraph->node_count(); i++) {
         std::string name = (digraph->enumeration2node[i])->name;
         Vector vector(vectors_->at(i)); // a copy
         vector.to_ball_point();
-        ofs << name << " " << vector << std::endl;
+        ofs << regex_replace(name, std::regex(" "), "") << " " << vector << std::endl;
     }
     ofs.close();
 }
